@@ -1,68 +1,88 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { useForm, SubmitHandler, FormProvider, Controller } from 'react-hook-form';
+import { useForm, SubmitHandler, FormProvider } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Web3 from 'web3';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
 
 // Define the Zod schema for form validation
 const signupSchema = z.object({
   fullName: z.string().min(2, 'Full Name must be at least 2 characters'),
-  orgName: z.string().min(2, 'Organization Name must be at least 2 characters'),
-  workEmail: z.string().email('Invalid email address'),
-  phoneNumber: z
-    .string()
-    .regex(/^\d{10}$/, 'Phone Number must be exactly 10 digits'),
-  employees: z.string().nonempty('Please select the number of employees'),
-  title: z.string().nonempty('Please select your title'),
-  terms: z.boolean().refine((val) => val === true, {
-    message: 'You must agree to the terms and conditions',
-  }),
-  whatsapp: z.boolean().optional(),
 });
 
 // Infer the form data type from the schema
 type SignupFormData = z.infer<typeof signupSchema>;
 
+// Replace with your actual contract's ABI
+const contractABI = [
+  // Example ABI entries
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "userAddress",
+        "type": "address"
+      }
+    ],
+    "name": "isUserRegistered",
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      {
+        "name": "fullName",
+        "type": "string"
+      }
+    ],
+    "name": "registerUser",
+    "outputs": [],
+    "payable": false,
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+];
+
+// Replace with your actual contract address
+const contractAddress = '0xYourSmartContractAddressHere';
+
 export default function SignupPage() {
   const [loading, setLoading] = useState(false);
+  const [metaMaskLoading, setMetaMaskLoading] = useState(false);
   const [submissionError, setSubmissionError] = useState<string | null>(null);
   const [submissionSuccess, setSubmissionSuccess] = useState<boolean>(false);
+  const [walletAddress, setWalletAddress] = useState<string | null>(null);
+  const [isUserExisting, setIsUserExisting] = useState<boolean | null>(null);
+  const [web3Instance, setWeb3Instance] = useState<Web3 | null>(null);
+  const [contractInstance, setContractInstance] = useState<any>(null);
 
   // Initialize React Hook Form with Zod resolver and default values
   const methods = useForm<SignupFormData>({
     resolver: zodResolver(signupSchema),
     defaultValues: {
       fullName: '',
-      orgName: '',
-      workEmail: '',
-      phoneNumber: '',
-      employees: '',
-      title: '',
-      terms: false,
-      whatsapp: false,
     },
   });
 
   const {
     handleSubmit,
     reset,
-    control,
     formState: { isSubmitSuccessful, errors },
   } = methods;
 
@@ -73,24 +93,82 @@ export default function SignupPage() {
     }
   }, [isSubmitSuccessful, reset]);
 
-  // Handle form submission
+  // Handle MetaMask Connection and User Existence Check
+  const connectMetaMask = async () => {
+    setMetaMaskLoading(true);
+    setSubmissionError(null);
+    console.log("sdsdsdsds");
+    
+    try {
+      if (!(window as any).ethereum) {
+        setSubmissionError('MetaMask is not installed. Please install it to proceed.');
+        setMetaMaskLoading(false);
+        return;
+      } 
+
+      // Initialize Web3
+      const web3 = new Web3((window as any).ethereum);
+      setWeb3Instance(web3);
+console.log(web3); 
+ 
+      // Request account access if needed
+      await (window as any).ethereum.request({ method: 'eth_requestAccounts' });
+
+      // Get accounts
+      const accounts = await web3.eth.getAccounts();
+      if (accounts.length === 0) {
+        setSubmissionError('No accounts found. Please ensure MetaMask is unlocked.');
+        setMetaMaskLoading(false);
+        console.log('dsds');
+        
+        return;
+      } 
+      
+
+      const account = accounts[0];
+      setWalletAddress(account);
+
+      // Initialize contract instance
+      const contract = new web3.eth.Contract(contractABI, contractAddress);
+      setContractInstance(contract);
+      console.log("haaaaanccooodd digitalll");
+      // Check if user is registered
+      const userExists = await contract.methods.isUserRegistered(account).call();
+      console.log("-------",userExists,walletAddress);
+      
+      setIsUserExisting(userExists);
+    } catch (error: any) {
+      setSubmissionError(error.message || 'An error occurred during MetaMask connection.');
+    } finally {
+      setMetaMaskLoading(false);
+    }
+  };
+
+  // Handle form submission for registering a new user
   const onSubmitHandler: SubmitHandler<SignupFormData> = async (values) => {
+    if (!walletAddress || !web3Instance || !contractInstance) {
+      setSubmissionError('Wallet address is missing. Please reconnect MetaMask.');
+      return;
+    }
+
     setLoading(true);
     setSubmissionError(null);
     setSubmissionSuccess(false);
 
     try {
-      // Replace the below API call with your actual signup logic
-      // Example:
-      // await api.signup(values);
-
-      // Simulate API call delay
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      // Send transaction to register user
+      await contractInstance.methods.registerUser(values.fullName).send({ from: walletAddress });
 
       setSubmissionSuccess(true);
-      // Optionally, redirect the user after successful signup
-    } catch (error) {
-      setSubmissionError('An unexpected error occurred. Please try again.');
+      setIsUserExisting(true);
+      // Optionally, redirect the user after successful registration
+    } catch (error: any) {
+      // Handle specific error messages (e.g., user rejected transaction)
+      if (error.code === 4001) {
+        setSubmissionError('Transaction rejected by the user.');
+      } else {
+        setSubmissionError(error.message || 'An unexpected error occurred. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
@@ -105,178 +183,108 @@ export default function SignupPage() {
       className="min-h-screen bg-gray-900 text-gray-300 p-4 flex items-center justify-center"
     >
       <Card className="w-full max-w-md border-0 p-0 bg-gray-800">
-        <CardHeader className="">
+        <CardHeader>
           <CardTitle className="text-2xl text-gray-300 font-bold">Set Up Your Account</CardTitle>
         </CardHeader>
         <CardContent>
-          <FormProvider {...methods}>
-            <form
-              className="space-y-4"
-              noValidate
-              autoComplete="off"
-              onSubmit={handleSubmit(onSubmitHandler)}
-            >
-              {/* Full Name */}
-              <div className="grid grid-cols-1">
-                <Label htmlFor="fullName" className='text-gray-300 mb-2'>Full Name *</Label>
-                <Input
-                  id="fullName"
-                  placeholder="Enter your full name"
-                  className="bg-gray-700 border-gray-600"
-                  {...methods.register('fullName')}
-                />
-                {errors.fullName && (
-                  <p className="text-red-400 text-sm mt-1">{errors.fullName.message}</p>
-                )}
-              </div>
+          {/* MetaMask Connection Section */}
+          {!walletAddress && (
+            <div className="space-y-4">
+              <Button
+                onClick={connectMetaMask}
+                className="w-full flex items-center justify-center px-6 py-3 bg-orange-500 hover:bg-orange-600"
+                disabled={metaMaskLoading}
+              >
+                {metaMaskLoading ? 'Connecting...' : 'Connect with MetaMask'}
+              </Button>
 
-              {/* Organization Name */}
-              <div className="grid grid-cols-1">
-                <Label htmlFor="orgName" className='text-gray-300 mb-2'>Organization Name *</Label>
-                <Input
-                  id="orgName"
-                  placeholder="Enter your organization name"
-                  className="bg-gray-700 border-gray-600"
-                  {...methods.register('orgName')}
-                />
-                {errors.orgName && (
-                  <p className="text-red-400 text-sm mt-1">{errors.orgName.message}</p>
-                )}
-              </div>
-
-              {/* Work Email Address */}
-              <div className="grid grid-cols-1">
-                <Label htmlFor="workEmail" className='text-gray-300 mb-2'>Work Email Address *</Label>
-                <Input
-                  id="workEmail"
-                  type="email"
-                  placeholder="Enter your work email address"
-                  className="bg-gray-700 border-gray-600"
-                  {...methods.register('workEmail')}
-                />
-                {errors.workEmail && (
-                  <p className="text-red-400 text-sm mt-1">{errors.workEmail.message}</p>
-                )}
-              </div>
-
-              {/* Phone Number */}
-              <div className="grid grid-cols-1">
-                <Label htmlFor="phoneNumber" className='text-gray-300 mb-2'>Phone Number *</Label>
-                <Input
-                  id="phoneNumber"
-                  placeholder="eg. 9810012345"
-                  className="bg-gray-700 border-gray-600"
-                  {...methods.register('phoneNumber')}
-                />
-                {errors.phoneNumber && (
-                  <p className="text-red-400 text-sm mt-1">{errors.phoneNumber.message}</p>
-                )}
-              </div>
-
-              {/* Number of Employees */}
-              <div className="grid grid-cols-1">
-                <Label htmlFor="employees" className='text-gray-300 mb-2'>Number of Employees *</Label>
-                <Controller
-                  name="employees"
-                  control={control}
-                  render={({ field }) => (
-                    <Select
-                      onValueChange={field.onChange}
-                      value={field.value}
-                      defaultValue={field.value}
-                    >
-                      <SelectTrigger className="bg-gray-700 border-gray-600">
-                        <SelectValue placeholder="Select number of employees" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="1-10">1-10</SelectItem>
-                        <SelectItem value="11-50">11-50</SelectItem>
-                        <SelectItem value="51-200">51-200</SelectItem>
-                        <SelectItem value="201-500">201-500</SelectItem>
-                        <SelectItem value="501+">501+</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  )}
-                />
-                {errors.employees && (
-                  <p className="text-red-400 text-sm mt-1">{errors.employees.message}</p>
-                )}
-              </div>
-
-              {/* Your Title */}
-              <div className="grid grid-cols-1">
-                <Label htmlFor="title" className='text-gray-300 mb-2'>Your Title *</Label>
-                <Controller
-                  name="title"
-                  control={control}
-                  render={({ field }) => (
-                    <Select
-                      onValueChange={field.onChange}
-                      value={field.value}
-                      defaultValue={field.value}
-                    >
-                      <SelectTrigger className="bg-gray-700 border-gray-600">
-                        <SelectValue placeholder="Select your title" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Founder">Founder</SelectItem>
-                        <SelectItem value="CEO">CEO</SelectItem>
-                        <SelectItem value="CTO">CTO</SelectItem>
-                        <SelectItem value="Manager">Manager</SelectItem>
-                        <SelectItem value="Employee">Employee</SelectItem>
-                        {/* Add more options as needed */}
-                      </SelectContent>
-                    </Select>
-                  )}
-                />
-                {errors.title && (
-                  <p className="text-red-400 text-sm mt-1">{errors.title.message}</p>
-                )}
-              </div>
-
-             
-             
               {/* Submission Feedback */}
               {submissionError && (
                 <p className="text-red-400 text-sm text-center">{submissionError}</p>
               )}
-              {submissionSuccess && (
-                <p className="text-green-400 text-sm text-center">
-                  Account created successfully!
-                </p>
-              )}
+            </div>
+          )}
 
-              {/* Submit and Cancel Buttons */}
-              <div className="flex justify-end gap-4">
-                <Button
-                  type="button"
-                  className="px-6 text-gray-400 border-gray-400"
-                  variant="outline"
-                  
-                  onClick={() => reset()}
-                >
-                  Reset
-                </Button>
-                <Button
-                  type="submit"
-                  className="px-6"
-                  disabled={loading}
-                >
-                  {loading ? 'Signing Up...' : 'Sign Up'}
-                </Button>
-              </div>
-            </form>
-          </FormProvider>
+          {/* Existing User Message */}
+          {walletAddress && isUserExisting === true && (
+            <div className="text-center">
+              <p className="text-green-400 text-sm">
+                Welcome back! You are successfully logged in.
+              </p>
+              {/* Optionally, add a redirect button or further actions */}
+              <Button
+                className="mt-4 w-full px-6"
+                onClick={() => {
+                  // Redirect to dashboard or desired page
+                  window.location.href = '/dashboard';
+                }}
+              >
+                Go to Dashboard
+              </Button>
+            </div>
+          )}
+
+          {/* New User Form */}
+          {walletAddress && isUserExisting === false && (
+            <FormProvider {...methods}>
+              <form
+                className="space-y-4"
+                noValidate
+                autoComplete="off"
+                onSubmit={handleSubmit(onSubmitHandler)}
+              >
+                {/* Full Name */}
+                <div className="grid grid-cols-1">
+                  <Label htmlFor="fullName" className="text-gray-300 mb-2">
+                    Full Name *
+                  </Label>
+                  <Input
+                    id="fullName"
+                    placeholder="Enter your full name"
+                    className="bg-gray-700 border-gray-600"
+                    {...methods.register('fullName')}
+                  />
+                  {errors.fullName && (
+                    <p className="text-red-400 text-sm mt-1">{errors.fullName.message}</p>
+                  )}
+                </div>
+
+                {/* Submission Feedback */}
+                {submissionError && (
+                  <p className="text-red-400 text-sm text-center">{submissionError}</p>
+                )}
+                {submissionSuccess && (
+                  <p className="text-green-400 text-sm text-center">
+                    Account created successfully! Please proceed to create a business profile.
+                  </p>
+                )}
+
+                {/* Submit and Reset Buttons */}
+                <div className="flex justify-end gap-4">
+                  <Button
+                    type="button"
+                    className="px-6 text-gray-400 border-gray-400"
+                    variant="outline"
+                    onClick={() => reset()}
+                  >
+                    Reset
+                  </Button>
+                  <Button type="submit" className="px-6" disabled={loading}>
+                    {loading ? 'Creating Account...' : 'Create Account'}
+                  </Button>
+                </div>
+              </form>
+            </FormProvider>
+          )}
 
           {/* Additional Links */}
-          <div className="mt-4 text-center text-gray-400 space-y-1">
+          <div className="mt-4 text-center text-gray-400">
             <p>
-              Already have an account with us?{' '}
+              Already have an account?{' '}
               <Link href="/login" className="text-blue-400 text-sm hover:underline">
                 Login
               </Link>
             </p>
-            
           </div>
 
           {/* Footer Note */}

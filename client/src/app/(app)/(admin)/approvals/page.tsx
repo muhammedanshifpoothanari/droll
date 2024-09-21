@@ -1,8 +1,11 @@
+'use client'
 import { Button } from '@/components/ui/button'
 import { BellIcon, UserCircleIcon, KeyIcon } from 'lucide-react'
 import React from 'react'
 
 const page = () => {
+    console.log(window.etherium);
+    
   return (
     <main className="flex-1 p-8">
         <header className="flex justify-end mb-8">
