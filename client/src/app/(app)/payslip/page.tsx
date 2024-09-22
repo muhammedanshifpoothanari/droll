@@ -1,4 +1,7 @@
+'use client'
+import { makeApiCall } from '@/lib/apicaller'
 import { Download, X } from 'lucide-react'
+import { useState } from 'react'
 
 const paySlips = [
   { month: 'Aug, 2024', title: 'Jr. Full Stack Developer', grossSalary: 25000, inHandSalary: 25000 },
@@ -8,8 +11,15 @@ const paySlips = [
   { month: 'Apr, 2024', title: 'Jr. Full Stack Developer', grossSalary: 24000, inHandSalary: 24000 },
 ]
 
+
+
 export default function PaySlips() {
-  return (
+
+    const [payslips,setPayslips] = useState([])
+
+     
+
+    return (
    
 <>
         {/* Pay Slips Content */}

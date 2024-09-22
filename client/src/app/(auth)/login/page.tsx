@@ -12,6 +12,9 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { AppDispatch } from '@/redux/store';
+import { useDispatch } from 'react-redux';
+import { logUser } from '@/redux/features/authSlice';
 
 // Define the Zod schema for form validation
 const signupSchema = z.object({
@@ -36,7 +39,8 @@ export default function SignupPage() {
   const [isUserExisting, setIsUserExisting] = useState<boolean | null>(null);
   const [web3Instance, setWeb3Instance] = useState<Web3 | null>(null);
   const [contractInstance, setContractInstance] = useState<any>(null);
-
+  const dispatch = useDispatch<AppDispatch>();
+    
   // Initialize React Hook Form with Zod resolver and default values
   const methods = useForm<SignupFormData>({
     resolver: zodResolver(signupSchema),
@@ -90,11 +94,13 @@ console.log(web3);
       } 
       
 
-      const account = accounts[0];
+      const account:string  = accounts[0];
       setWalletAddress(account);
-
-      // Initialize contract instance
       const contract = new web3.eth.Contract(PayrollSystemABI, contractAddress);
+console.log("sdsd");
+
+      dispatch(logUser({ address: account,contract }));
+      // Initialize contract instance
       setContractInstance(contract);
       console.log("haaaaanccooodd digitalll");
       // Check if user is registered
@@ -121,9 +127,7 @@ console.log(web3);
     setSubmissionSuccess(false);
 
     try {
-      // Send transaction to register user
-      await contractInstance.methods.registerUser(values.fullName).send({ from: walletAddress });
-
+      
       setSubmissionSuccess(true);
       setIsUserExisting(true);
       // Optionally, redirect the user after successful registration

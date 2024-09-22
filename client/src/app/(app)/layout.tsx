@@ -1,78 +1,46 @@
-// 'use client'
+// src/components/Layout.tsx
+'use client';
 
-// import { useRouter } from "next/navigation";
-// import { useEffect, useState } from "react";
-// import { useQuery } from "@tanstack/react-query"; 
-// import Sidebar from "@/components/layout/Sidebar";
-// import Navbar from "./_components/navbar/Navbar";
-// import { AuthService } from "@/services/api/auth-service";
-// import Spinner from "@/components/animated/Spinner";
-// import { useLoading } from '@/context/LoadingContext'; // Import loading context
+import React, { useEffect } from 'react';
+import { useRouter } from 'next/navigation'; // For Next.js 13+ app directory
+import { useSelector } from 'react-redux';
+import { selectEthereumAddress } from '@/redux/features/authSlice';
+import { RootState } from '@/redux/store';
+ import Sidebar from '@/components/layout/Sidebar';
+import Navbar from '@/components/layout/Navbar';
+import Spinner from '@/components/animated/Spinner';
 
-// // Function to fetch user authentication status
-// const fetchAuthStatus = async () => {
-//     const service = new AuthService();
-//     const response = await service.isUserActive();
-//     return response; // Should return an object like { isAuthenticated: true/false }
-// };
-
-// export default function Layout({ children }: { children: React.ReactNode }) {
-//     const router = useRouter();
-//     const { isLoading: contextLoading, setLoading } = useLoading(); // Rename `isLoadingOne` to `contextLoading`
-//     const [authStatus, setAuthStatus] = useState<boolean>(false)
-    
-    
-    
-
-//     // Redirect to login if not authenticated
-//     useEffect(() => {
-//         if (!isLoading && !authStatus) {
-//             router.push("/login");
-//         }
-//     }, [isLoading, authStatus, router]);
-
-//     // Block rendering until the authentication status is determined
-//     if (isLoading || !authStatus) {
-//         return <Spinner />; // Display loading state while checking auth
-//     }
-
-//     if (isError) {
-//         return <div>Error fetching authentication status</div>;
-//     }
-
-//     // Render protected content only if authenticated
-//     return (
-//         <>
-//             <Navbar />
-//             <div className="flex h-screen bg-gray-900 text-gray-100">
-//                 <Sidebar />
-//                 {contextLoading ? <Spinner /> : children} {/* Display spinner based on context loading */}
-//             </div>
-//         </>
-//     );
-// }
-
-import Navbar from '@/components/layout/Navbar'
-import RightSideBar from '@/components/layout/RightSideBar'
-import Sidebar from '@/components/layout/Sidebar'
- import React from 'react'
-
-const Layout = ({children}:{children:React.ReactNode}) => {
-  return (
-    <div className="flex h-screen bg-gray-900 text-gray-100">
-      {/* Sidebar */}
-     <Sidebar />
-
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Header */}
-        <Navbar />
-    {children} </div>
-
-{/* Right Sidebar */}
-<RightSideBar />
-</div>
-  )
+interface LayoutProps {
+  children: React.ReactNode;
 }
 
-export default Layout
+const Layout: React.FC<LayoutProps> = ({ children }) => {
+  const router = useRouter();
+  const ethereumAddress = useSelector((state: RootState) => selectEthereumAddress(state));
+console.log(ethereumAddress);
+
+  useEffect(() => {
+    // If ethereumAddress is not present, redirect to /login
+    if (!ethereumAddress) {
+      router.push('/login');
+    }
+  }, [ethereumAddress, router]);
+
+  // If ethereumAddress is not present, do not render children
+  // This prevents flashing of protected content before redirection
+
+
+  return (
+    <>
+      <Navbar />
+      <div className="flex h-screen bg-gray-900 text-gray-100">
+        <Sidebar />
+        <main className="flex-1">
+          {children}
+        </main>
+      </div>
+    </>
+  );
+};
+
+export default Layout;

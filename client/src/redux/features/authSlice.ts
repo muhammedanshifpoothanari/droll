@@ -1,32 +1,39 @@
+// src/redux/features/authSlice.ts
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 type InitialState = {
     isAuth: boolean;
     session: null | unknown;
     isLoading: boolean;
-    ethereumAddress: string | null; // Ethereum address stored here
+    ethereumAddress: string | null;  
+    contract:any
 };
 
 const initialState: InitialState = {
     isAuth: false,
     session: null,
     isLoading: false,
-    ethereumAddress: null, // Initialize ethereumAddress as null
+    ethereumAddress: null,  
+    contract:null
 };
 
 export const auth = createSlice({
     name: "auth",
     initialState,
     reducers: {
-        logUser: (state, { payload }: PayloadAction<{ address: string }>) => {
+        logUser: (state, { payload }: PayloadAction<{
+            contract: any; address: string 
+}>) => {
             state.isAuth = true;
             state.session = payload;
             state.ethereumAddress = payload.address; // Store Ethereum address in the state
+            state.contract = payload.contract
         },
         logout: (state) => {
             state.isAuth = false;
             state.session = null;
-            state.ethereumAddress = null; // Reset Ethereum address on logout
+             state.ethereumAddress = null;
+             state.contract = null;
         },
     },
 });
@@ -50,4 +57,18 @@ export const selectUserDetails = (state: RootState) => ({
     session: state.authReducer.session
 });
 
+export const selectEthereumAddress = (state: RootState) => state.authReducer.ethereumAddress;
+
 export default auth.reducer;
+
+
+
+
+// import { useDispatch } from 'react-redux';
+// import { logUser } from '@/redux/features/authSlice';
+
+// const dispatch = useDispatch();
+
+// const handleLogin = (userAddress: string) => {
+//     dispatch(logUser({ address: userAddress }));
+// };
