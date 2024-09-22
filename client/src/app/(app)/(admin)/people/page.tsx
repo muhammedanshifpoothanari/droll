@@ -21,8 +21,7 @@ const Page = () => {
       {/* WhatsApp Banner */}
       <div className="bg-gray-800 rounded-lg p-4 mb-6 flex items-center justify-between">
         <div className="flex items-center">
-          <img src="/placeholder.svg?height=40&width=40" alt="WhatsApp" className="mr-4 h-10 w-10" />
-          <span>Now get your past month payslips on WhatsApp within seconds!</span>
+           
         </div>
         <div className="flex items-center">
           <a href="#" className="text-blue-400 hover:underline mr-4">Learn more</a>
