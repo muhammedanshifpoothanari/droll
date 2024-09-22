@@ -22,7 +22,7 @@ const Sidebar = () => {
   return (
     <aside className="w-64 bg-gray-800 p-4">
       <div className="mb-8">
-        <img src="/placeholder.svg?height=32&width=150" alt="RazorpayX Payroll" className="h-8" />
+        <img src="/placeholder.svg?height=32&width=150" alt=" Payroll" className="h-8" />
       </div>
       <nav>
         <ul className="space-y-2">
