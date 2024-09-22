@@ -18,9 +18,8 @@ export default function buildUserSignupController({
         
         validateBody(userData, ["name", "username", "password", "avatar","email"]);
 
-        const field = await userUseCases.signUp({
+        const field = await userUseCases.signIn({
            email: userData?.email,
- 
            password: userData?.password
         });
 

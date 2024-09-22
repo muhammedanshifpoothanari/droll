@@ -1,3 +1,5 @@
+import { ObjectId } from "mongoose";
+
 /* SalaryComponent */
 export type ISalaryComponent = {
     name: string;
@@ -86,4 +88,29 @@ export interface ICompanyEntity extends ICompany {
 
 export interface ICompanyEntityConstructor {
     new (data: ICompany): ICompanyEntity;
+}
+
+ 
+export interface IUser {
+    email: string;
+    password: string;
+}
+
+export type IDBUser = IUser & {
+    _id:ObjectId
+}
+
+export interface IVerification {
+    user: string;
+    code: number;
+    expiresAt: Date;
+}
+
+export interface IUserEntity extends IUser {
+    validate: () => void;
+    get: () => IUser;
+}
+
+export interface IUserEntityConstructor {
+    new (data: IUser): IUserEntity;
 }

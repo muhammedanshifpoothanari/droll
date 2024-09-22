@@ -4,7 +4,7 @@ import {
 } from "../../interfaces/entity.interface.js";
 import { IUserRepository } from "../../interfaces/repository.interface.js";
  
-export default function buildAddUserUseCase({
+export default function buildUserSignInUseCase({
     databaseRepository,
     User,
 }: {
@@ -15,7 +15,7 @@ export default function buildAddUserUseCase({
         const UserEntity = new User(data);
         UserEntity.validate();
         const UserField = UserEntity.get();
-        const document = await databaseRepository.signUp(UserField)
+        const document = await databaseRepository.signIn(UserField)
         return document;
     };
 }

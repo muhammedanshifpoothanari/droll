@@ -7,7 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Web3 from 'web3';
-
+import PayrollSystemABI from '../../../lib/PayrollSystemABI.json'; 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -22,45 +22,10 @@ const signupSchema = z.object({
 type SignupFormData = z.infer<typeof signupSchema>;
 
 // Replace with your actual contract's ABI
-const contractABI = [
-  // Example ABI entries
-  {
-    "constant": true,
-    "inputs": [
-      {
-        "name": "userAddress",
-        "type": "address"
-      }
-    ],
-    "name": "isUserRegistered",
-    "outputs": [
-      {
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": false,
-    "inputs": [
-      {
-        "name": "fullName",
-        "type": "string"
-      }
-    ],
-    "name": "registerUser",
-    "outputs": [],
-    "payable": false,
-    "stateMutability": "nonpayable",
-    "type": "function"
-  }
-];
+ 
 
 // Replace with your actual contract address
-const contractAddress = '0xYourSmartContractAddressHere';
+const contractAddress = '0x0e2356a386979bd75b3dfc9a17db3f55024a490b';
 
 export default function SignupPage() {
   const [loading, setLoading] = useState(false);
@@ -129,7 +94,7 @@ console.log(web3);
       setWalletAddress(account);
 
       // Initialize contract instance
-      const contract = new web3.eth.Contract(contractABI, contractAddress);
+      const contract = new web3.eth.Contract(PayrollSystemABI, contractAddress);
       setContractInstance(contract);
       console.log("haaaaanccooodd digitalll");
       // Check if user is registered

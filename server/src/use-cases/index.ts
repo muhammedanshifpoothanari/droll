@@ -9,23 +9,29 @@ import { employeeRepository, companyRepository, payslipRepository, salaryCompone
 
 // add here
 import buildAddUserUseCase from "./user/add-user.use-case.js";
+import buildUserSignInUseCase from "./user/user-sign-in.use-case.js";
+
 const addUser = buildAddUserUseCase({
     databaseRepository,
     User
 });
 
-export const employeeUseCases: IEmployeeUseCases = Object.freeze({
-    addUser
+const signIn = buildUserSignInUseCase({
+    User
 })
-export const companyUseCases: ICompanyUseCases = Object.freeze({
-    addUser
-})
-export const payslipUseCases: IPayslipUseCases = Object.freeze({
-    addUser
-})
-export const salaryComponentUseCases: ISalaryComponentUseCases = Object.freeze({
-    addUser
-})
-export const deductionComponentUseCases: IDeductionComponentUseCases = Object.freeze({
-    addUser
-})
+
+// export const employeeUseCases: IEmployeeUseCases = Object.freeze({
+   
+// })
+// export const companyUseCases: ICompanyUseCases = Object.freeze({
+   
+// })
+// export const payslipUseCases: IPayslipUseCases = Object.freeze({
+   
+// })
+// export const salaryComponentUseCases: ISalaryComponentUseCases = Object.freeze({
+   
+// })
+// export const deductionComponentUseCases: IDeductionComponentUseCases = Object.freeze({
+   
+// })

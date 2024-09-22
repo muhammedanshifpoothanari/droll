@@ -1,4 +1,4 @@
-import { ICompany, IEmployee, IPayslip, ISalaryComponent, IDeductionComponent } from "./entity.interface.js";
+import { ICompany, IEmployee, IPayslip, ISalaryComponent, IDeductionComponent, IUser } from "./entity.interface.js";
 import { IDBEmployee } from "../repository/mongo/models/employee.model.js";
 import { IDBCompany } from "../repository/mongo/models/company.model.js";
 import { IDBPayslip } from "../repository/mongo/models/payslip.model.js";
@@ -6,17 +6,28 @@ import { IDBSalaryComponent } from "../repository/mongo/models/salary-component.
 import { IDBDeductionComponent } from "../repository/mongo/models/deduction-component.model.js";
 
 export type IEmployeeUseCases = {
-    addUser: (data: IEmployee) => Promise<IDBEmployee>
+    addEmployee: (data: IEmployee) => Promise<IDBEmployee>
 }
 export type ICompanyUseCases = {
-    addUser: (data: ICompany) => Promise<IDBCompany>
+    createCompany: (data: ICompany) => Promise<IDBCompany>
 }
 export type IPayslipUseCases = {
-    addUser: (data: IPayslip) => Promise<IDBPayslip>
+    createPayslip: (data: IPayslip) => Promise<IDBPayslip>
 }
 export type ISalaryComponentUseCases = {
-    addUser: (data: ISalaryComponent) => Promise<IDBSalaryComponent>
+    createSalaryComponent: (data: ISalaryComponent) => Promise<IDBSalaryComponent>
 }
 export type IDeductionComponentUseCases = {
-    addUser: (data: IDeductionComponent) => Promise<IDBDeductionComponent>
+    createDeductionComponent: (data: IDeductionComponent) => Promise<IDBDeductionComponent>
 }
+
+export type IUserUseCases = {
+    signUp: (userData: IUser) => Promise<IUser>;
+    signIn: (userData: {
+        email: string;
+        password: string;
+    }) => Promise<{ user: IUser; token: string }>;
+    resendCode: ({ email }: {
+        email: string;
+    }) => Promise<void>
+};

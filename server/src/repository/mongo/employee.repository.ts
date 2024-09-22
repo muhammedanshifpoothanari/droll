@@ -1,6 +1,6 @@
 import { IEmployee } from "../../interfaces/entity.interface.js";
 import { IEmployeeRepository } from "../../interfaces/repository.interface.js";
-import { IDBEmployee, IEmployeeModel } from "./models/Employee.model.js";
+import { IDBEmployee, IEmployeeModel } from "./models/employee.model.js";
 
 export default function buildEmployeeRepository({
     database,
@@ -36,4 +36,4 @@ export default function buildEmployeeRepository({
         },
     });
 }
-c
+ 
