@@ -40,7 +40,7 @@ export default function Component() {
   if (!isEmploy) {
     return (
       <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-900 p-6">
-        <div className="bg-gray-800 rounded-lg p-6 max-w-md mx-auto">
+        <div className="bg-gray-800 rounded-lg p-6  mx-auto">
           <h2 className="text-xl font-semibold mb-4">Register Your Company</h2>
           <form onSubmit={handleRegisterCompany}>
             <div className="mb-4">
