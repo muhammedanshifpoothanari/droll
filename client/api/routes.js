@@ -1,8 +1,9 @@
+'use client'
 import Web3 from 'web3';
 import PayrollSystemABI from '../src/lib/PayrollSystemABI.json'; 
 const CONTRACT_ADDRESS = "0x70cd2b18044e877172431ef42ee318742b30fb93";
 
-    let account;
+    let account= '0x71856B8770aD05f90705660c54Aeda88680A9C57';
     let companies;
     let employees;
     let companyName;
@@ -61,6 +62,7 @@ const CONTRACT_ADDRESS = "0x70cd2b18044e877172431ef42ee318742b30fb93";
         const companyDetails = await contract.methods.companies(account).call({ from: account });
         console.log('Company Details:', companyDetails);
         companies =[companyDetails]; 
+        return companies
     } catch (error) {
         console.error('Error fetching company details:', error.message);
         errorMessage = 'Error fetching company details. Please try again.';
@@ -69,15 +71,20 @@ const CONTRACT_ADDRESS = "0x70cd2b18044e877172431ef42ee318742b30fb93";
 
 
 export const fetchEmployees = async () => {
+    console.log(account,"acc");
+    
         const company = await contract.methods.companies(account).call();
         const employeeAddresses = company.employeeAddresses;
+        if(employeeAddresses){
         employees = await Promise.all(employeeAddresses.map(async (addr) => {
             const details = await contract.methods.getEmployeeDetails(addr).call();
             return { name: details[0], wallet: details[1], balance: details[2], payableBalance: details[3], fullyPaid: details[4], salary: details[5] };
         })); 
+        return employees
+    } return
     };
 
-    export const addCompany = async () => {
+    export const addCompany = async (companyName) => {
         try {
           console.log('Company Details:', contract.methods.registerCompany);
             await contract.methods.registerCompany(companyName).send({ from: account });
@@ -88,11 +95,11 @@ export const fetchEmployees = async () => {
         }
     };
 
-    export const addEmployee = async () => {
+    export const addEmployee = async (employeeAddr,employeeName,salary) => {
         try {
             await contract.methods.addEmployee(employeeAddr, employeeName, salary).send({ from: account });
             alert('Employee added!');
-            fetchEmployees();
+             
         } catch (error) {
             handleError(error);
         }
@@ -137,10 +144,11 @@ export const fetchEmployees = async () => {
         }
     };
 
-    export  const getPayslips = async () => {
+    export  const getPayslips = async (employeeAddr) => {
         try {
             const payslips = await contract.methods.getPayslips(employeeAddr).call();
             console.log(payslips); // Handle payslip data (display as needed)
+            return payslips
         } catch (error) {
             handleError(error);
         }

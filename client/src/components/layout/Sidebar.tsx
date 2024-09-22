@@ -1,7 +1,9 @@
+'use client'
 import { ChevronDown } from 'lucide-react';
 import Link from 'next/link';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation'; // Import usePathname
+import { fetchCompanies } from '../../../api/routes';
 
 const Sidebar = () => {
   const currentPath = usePathname(); // Get the current path
@@ -10,7 +12,12 @@ const Sidebar = () => {
     { name: 'Dashboard', reference: 'dashboard' },
     { name: 'My Pay Slips', reference: 'payslip' },
     { name: 'Attendance', reference: 'attendance' },
+    {name:"Onboarding", reference:"onboarding"}
   ];
+  const [isAdmin,isSetAdmin] = useState<boolean>(false)
+   useEffect(()=>{
+    fetchCompanies().then(item=>item?.length!>0&&isSetAdmin(true))
+   },[])
 
   return (
     <aside className="w-64 bg-gray-800 p-4">
@@ -32,21 +39,20 @@ const Sidebar = () => {
           })}
         </ul>
       </nav>
+      {isAdmin &&
       <div className="mt-8">
         <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">ADMIN OPTIONS</h3>
         <ul className="space-y-2">
-          {['People', 'Pay Employees', 'Approvals', 'Company Details', 'Settings'].map((item, index) => (
+          {['People', 'people/onboarding', 'Approvals', 'Company Details', 'Settings']?.map((item, index) => (
             <li key={index}>
-              <a href="#" className={`flex items-center p-2 rounded-lg ${item === 'People' ? 'bg-gray-700' : 'hover:bg-gray-700'}`}>
+              <Link href={`/${item.toLocaleLowerCase()}`} className={`flex items-center p-2 rounded-lg ${item === 'People' ? 'bg-gray-700' : 'hover:bg-gray-700'}`}>
                 {item}
-                {(item === 'Pay Employees' || item === 'Pay Contractors') && (
-                  <ChevronDown className="ml-auto h-4 w-4" />
-                )}
-              </a>
+                 
+              </Link>
             </li>
           ))}
         </ul>
-      </div>
+      </div>}
     </aside>
   );
 };
