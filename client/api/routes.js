@@ -164,49 +164,49 @@ export const fetchEmployees = async () => {
 
 
 
-return (
-    <div>
-      <button onClick={loadAccount}>Connect acount</button>
-      <button onClick={fetchCompanies}>Connect acount</button>
+// return (
+//     <div>
+//       <button onClick={loadAccount}>Connect acount</button>
+//       <button onClick={fetchCompanies}>Connect acount</button>
 
     
-        <h1>Payroll System</h1>
-        <h2>Connected Account: {account}</h2>
-        <h2>Add Company</h2>
-        <input type="text" placeholder="Company Name" onChange={(e) => setCompanyName(e.target.value)} />
-        <button onClick={addCompany}>Add Company</button>
+//         <h1>Payroll System</h1>
+//         <h2>Connected Account: {account}</h2>
+//         <h2>Add Company</h2>
+//         <input type="text" placeholder="Company Name" onChange={(e) => setCompanyName(e.target.value)} />
+//         <button onClick={addCompany}>Add Company</button>
 
-        <h2>Add Employee</h2>
-        <input type="text" placeholder="Employee Address" onChange={(e) => setEmployeeAddr(e.target.value)} />
-        <input type="text" placeholder="Employee Name" onChange={(e) => setEmployeeName(e.target.value)} />
-        <input type="number" placeholder="Salary" onChange={(e) => setSalary(Number(e.target.value))} />
-        <button onClick={addEmployee}>Add Employee</button>
+//         <h2>Add Employee</h2>
+//         <input type="text" placeholder="Employee Address" onChange={(e) => setEmployeeAddr(e.target.value)} />
+//         <input type="text" placeholder="Employee Name" onChange={(e) => setEmployeeName(e.target.value)} />
+//         <input type="number" placeholder="Salary" onChange={(e) => setSalary(Number(e.target.value))} />
+//         <button onClick={addEmployee}>Add Employee</button>
 
-        <h2>Set Initial Balance</h2>
-        <input type="text" placeholder="Employee Address" onChange={(e) => setEmployeeAddr(e.target.value)} />
-        <input type="number" placeholder="Initial Balance" onChange={(e) => setPayableBalance(Number(e.target.value))} />
-        <button onClick={setInitialBalance}>Set Initial Balance</button>
+//         <h2>Set Initial Balance</h2>
+//         <input type="text" placeholder="Employee Address" onChange={(e) => setEmployeeAddr(e.target.value)} />
+//         <input type="number" placeholder="Initial Balance" onChange={(e) => setPayableBalance(Number(e.target.value))} />
+//         <button onClick={setInitialBalance}>Set Initial Balance</button>
 
-        <h2>Set Components</h2>
-        <button onClick={setComponents}>Set Components</button>
+//         <h2>Set Components</h2>
+//         <button onClick={setComponents}>Set Components</button>
 
-        <h2>Generate Payslip</h2>
-        <input type="text" placeholder="Employee Address" onChange={(e) => setEmployeeAddr(e.target.value)} />
-        <input type="text" placeholder="Pay Period" onChange={(e) => setPayPeriod(e.target.value)} />
-        <input type="text" placeholder="Employee ID" onChange={(e) => setEmployeeID(e.target.value)} />
-        <input type="text" placeholder="Designation" onChange={(e) => setDesignation(e.target.value)} />
-        <input type="text" placeholder="Date of Joining" onChange={(e) => setDateOfJoining(e.target.value)} />
-        <button onClick={generatePayslip}>Generate Payslip</button>
+//         <h2>Generate Payslip</h2>
+//         <input type="text" placeholder="Employee Address" onChange={(e) => setEmployeeAddr(e.target.value)} />
+//         <input type="text" placeholder="Pay Period" onChange={(e) => setPayPeriod(e.target.value)} />
+//         <input type="text" placeholder="Employee ID" onChange={(e) => setEmployeeID(e.target.value)} />
+//         <input type="text" placeholder="Designation" onChange={(e) => setDesignation(e.target.value)} />
+//         <input type="text" placeholder="Date of Joining" onChange={(e) => setDateOfJoining(e.target.value)} />
+//         <button onClick={generatePayslip}>Generate Payslip</button>
 
-        <h2>Update Salary</h2>
-        <input type="text" placeholder="Employee Address" onChange={(e) => setEmployeeAddr(e.target.value)} />
-        <input type="number" placeholder="New Salary" onChange={(e) => setSalary(Number(e.target.value))} />
-        <button onClick={updateSalary}>Update Salary</button>
+//         <h2>Update Salary</h2>
+//         <input type="text" placeholder="Employee Address" onChange={(e) => setEmployeeAddr(e.target.value)} />
+//         <input type="number" placeholder="New Salary" onChange={(e) => setSalary(Number(e.target.value))} />
+//         <button onClick={updateSalary}>Update Salary</button>
 
-        <h2>Get Payslip</h2>
-        <input type="text" placeholder="Employee Address" onChange={(e) => setEmployeeAddr(e.target.value)} />
-        <button onClick={getPayslips}>Get Payslip</button>
+//         <h2>Get Payslip</h2>
+//         <input type="text" placeholder="Employee Address" onChange={(e) => setEmployeeAddr(e.target.value)} />
+//         <button onClick={getPayslips}>Get Payslip</button>
 
-        {errorMessage && <div style={{ color: 'red' }}>{errorMessage}</div>}
-    </div>
-);
+//         {errorMessage && <div style={{ color: 'red' }}>{errorMessage}</div>}
+//     </div>
+// );
