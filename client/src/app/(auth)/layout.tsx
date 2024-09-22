@@ -1,12 +1,11 @@
-// src/components/Layout.tsx
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation'; // For Next.js 13+ app directory
 import { useDispatch, useSelector } from 'react-redux';
 import { selectEthereumAddress } from '@/redux/features/authSlice';
 import { AppDispatch, RootState } from '@/redux/store';
- import Sidebar from '@/components/layout/Sidebar';
+import Sidebar from '@/components/layout/Sidebar';
 import Navbar from '@/components/layout/Navbar';
 import Spinner from '@/components/animated/Spinner';
 
@@ -17,27 +16,36 @@ interface LayoutProps {
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const router = useRouter();
   const ethereumAddress = useSelector((state: RootState) => selectEthereumAddress(state));
-console.log(ethereumAddress);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
   useEffect(() => {
-    // If ethereumAddress is not present, redirect to /login
-    if (ethereumAddress) {
-        console.log("why this is");
-        
-      router.push('/dashboard');
+    if (!ethereumAddress) {
+      // If ethereumAddress is not present, redirect to /login
+      router.push('/login');
+    } else {
+      // If ethereumAddress exists, stop checking
+      setIsCheckingAuth(false);
     }
   }, [ethereumAddress, router]);
-  console.log("why this is not");
 
-  // If ethereumAddress is not present, do not render children
-  // This prevents flashing of protected content before redirection
-   console.log(ethereumAddress);
+  // Show spinner while waiting for authentication check
+  if (isCheckingAuth) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Spinner />
+      </div>
+    );
+  }
 
   return (
     <>
-       
+      <Navbar />
+      <div className="flex h-screen bg-gray-900 text-gray-100">
+        <Sidebar />
+        <main className="flex-1">
           {children}
-       
+        </main>
+      </div>
     </>
   );
 };

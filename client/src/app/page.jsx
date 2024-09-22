@@ -23,8 +23,7 @@ const Payroll = () => {
     const [deductionComponents, setDeductionComponents] = useState([['Tax','1000']]);
     const [errorMessage, setErrorMessage] = useState('');
 
-    const web3 = new Web3(window.ethereum);
-    console.log(web3,"lokal");
+    const web3 = new Web3(window.ethereum) ;
      
     const contract = new web3.eth.Contract(PayrollSystemABI, CONTRACT_ADDRESS);
 

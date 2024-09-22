@@ -4,7 +4,7 @@ import { BellIcon, UserCircleIcon, KeyIcon } from 'lucide-react'
 import React from 'react'
 
 const page = () => {
-    console.log(window.etherium);
+    
     
   return (
     <main className="flex-1 p-8">

@@ -15,6 +15,7 @@ import { Label } from '@/components/ui/label';
 import { AppDispatch } from '@/redux/store';
 import { useDispatch } from 'react-redux';
 import { logUser } from '@/redux/features/authSlice';
+import { useRouter } from 'next/navigation';
 
 // Define the Zod schema for form validation
 const signupSchema = z.object({
@@ -40,7 +41,7 @@ export default function SignupPage() {
   const [web3Instance, setWeb3Instance] = useState<Web3 | null>(null);
   const [contractInstance, setContractInstance] = useState<any>(null);
   const dispatch = useDispatch<AppDispatch>();
-    
+    const router = useRouter()
   // Initialize React Hook Form with Zod resolver and default values
   const methods = useForm<SignupFormData>({
     resolver: zodResolver(signupSchema),
@@ -97,24 +98,26 @@ console.log(web3);
       const account:string  = accounts[0];
       setWalletAddress(account);
       const contract = new web3.eth.Contract(PayrollSystemABI, contractAddress);
-console.log("sdsd");
+console.log("sdsd",account);
 
       dispatch(logUser({ address: account,contract }));
       // Initialize contract instance
+      
       setContractInstance(contract);
       console.log("haaaaanccooodd digitalll");
-      // Check if user is registered
-      const userExists = await contract.methods.isUserRegistered(account).call();
-      console.log("-------",userExists,walletAddress);
-      
-      setIsUserExisting(userExists);
+       
     } catch (error: any) {
       setSubmissionError(error.message || 'An error occurred during MetaMask connection.');
     } finally {
       setMetaMaskLoading(false);
     }
   };
-
+  useEffect(() => {
+    if (walletAddress) {
+      router.push('/dashboard');
+    }
+  }, [walletAddress, isUserExisting, router]);
+  
   // Handle form submission for registering a new user
   const onSubmitHandler: SubmitHandler<SignupFormData> = async (values) => {
     if (!walletAddress || !web3Instance || !contractInstance) {

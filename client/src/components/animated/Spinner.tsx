@@ -15,8 +15,8 @@ const Spinner: React.FC = () => {
     height: '50px',
     margin: '8px',
     borderRadius: '50%',
-    border: '5.4px solid hsl(350, 55%, 38%)',
-    borderColor: 'hsl(350, 55%, 38%) transparent hsl(350, 55%, 38%) transparent',
+    border: '5.4px solid black',
+    borderColor: 'black transparent black transparent',
     animation: 'lds-dual-ring 0.7s linear infinite',
   };
 
